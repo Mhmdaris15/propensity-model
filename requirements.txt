@@ -4,3 +4,6 @@ streamlit
 numpy
 ipaddress
 joblib
+scikit-learn
+matplotlib
+seaborn
