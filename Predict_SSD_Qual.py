@@ -180,5 +180,5 @@ if submit_button:
     
     # Display final results
     st.write("## Probability Score:")
-    st.write(f"### The probability score of the SSD being qualified is: {final_response[0]:.2f}")
+    st.write(f"### The probability score of the SSD being qualified is: {final_response[0]}")
     
