@@ -3,11 +3,6 @@ import pandas as pd
 import streamlit as st
 import joblib
 import json
-"""
-# Propensity Model Prediction
-This is a demo for propensity model prediction using Streamlit.
-"""
-
 # input file
 model = joblib.load('model/Supermodel API Pre-Ping.pkl')
 
