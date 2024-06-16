@@ -29,7 +29,7 @@ The model considers the following features to make predictions:
 - **Age**: The age of the user. It's derived from difference betweey current year (2024) and year of `dob` (Date of Birthdate)
 - **Latitude (generated)**: The generated latitude of the location.
 - **Longitude (generated)**: The generated longitude of the location.
-- **Hour**: The hour of the day when the request was made. It's derived from `Datetime` column, where we extracted the hour of the day.
+- **Hour**: The hour of the day when the request was made. It's derived from `Timestamp` column, where we extracted the hour of the day.
 - **IP Address**: The IP address of the request, which is then numerized for the model.
 
 ### Derived Features
