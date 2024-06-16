@@ -20,16 +20,16 @@ The model considers the following features to make predictions:
 - **State**: The state where the request originated.
 - **City**: The city where the request originated.
 - **Postal Code**: The postal code of the location.
-- **Connection Type**: The type of internet connection (e.g., Cable/DSL, Corporate, Cellular).
+- **Connection Type**: The type of internet connection (e.g., Cable/DSL, Corporate, Cellular, Satellite).
 - **Coreg Path**: The coregistration path identifier.
 - **ISP**: The Internet Service Provider.
 - **Male/Female**: The gender of the user (1 for Male, 0 for Female).
 - **Source**: The source of the request.
 - **Sub ID**: The sub-identifier associated with the source.
-- **Age**: The age of the user.
+- **Age**: The age of the user. It's derived from difference betweey current year (2024) and year of `dob` (Date of Birthdate)
 - **Latitude (generated)**: The generated latitude of the location.
 - **Longitude (generated)**: The generated longitude of the location.
-- **Hour**: The hour of the day when the request was made.
+- **Hour**: The hour of the day when the request was made. It's derived from `Datetime` column, where we extracted the hour of the day.
 - **IP Address**: The IP address of the request, which is then numerized for the model.
 
 ### Derived Features
