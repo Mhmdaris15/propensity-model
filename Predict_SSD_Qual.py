@@ -105,7 +105,7 @@ with st.form(key='input_form'):
     connection_type = st.selectbox("Connection Type", options=connection_type_list)
     coreg_path = st.selectbox("Coreg Path", options=coreg_path_list)
     isp = st.selectbox("ISP", options=isp_list)
-    male_female = st.radio("Male/Female", options=[0, 1], index=0)
+    male_female = st.radio("Gender", options=["Male", "Female"], index=0)
     source = st.selectbox("Source", options=source_list)
     subid = st.selectbox("Sub ID", options=subid_list)
     age = st.number_input("Age", value=62)
@@ -140,7 +140,7 @@ if submit_button:
         "connection_type": connection_type,
         "coreg_path": coreg_path,
         "isp": isp,
-        "Male/Female": male_female,
+        "Male/Female": 1 if male_female == "Male" else 0,
         "source": source,
         "subid": subid,
         "Age": age,
