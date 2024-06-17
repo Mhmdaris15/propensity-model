@@ -20,16 +20,16 @@ The model considers the following features to make predictions:
 - **State**: The state where the request originated.
 - **City**: The city where the request originated.
 - **Postal Code**: The postal code of the location.
-- **Connection Type**: The type of internet connection (e.g., Cable/DSL, Corporate, Cellular).
+- **Connection Type**: The type of internet connection (e.g., Cable/DSL, Corporate, Cellular, Satellite).
 - **Coreg Path**: The coregistration path identifier.
 - **ISP**: The Internet Service Provider.
 - **Male/Female**: The gender of the user (1 for Male, 0 for Female).
 - **Source**: The source of the request.
 - **Sub ID**: The sub-identifier associated with the source.
-- **Age**: The age of the user.
+- **Age**: The age of the user. It's derived from difference betweey current year (2024) and year of `dob` (Date of Birthdate)
 - **Latitude (generated)**: The generated latitude of the location.
 - **Longitude (generated)**: The generated longitude of the location.
-- **Hour**: The hour of the day when the request was made.
+- **Hour**: The hour of the day when the request was made. It's derived from `Timestamp` column, where we extracted the hour of the day.
 - **IP Address**: The IP address of the request, which is then numerized for the model.
 
 ### Derived Features
@@ -105,7 +105,7 @@ with st.form(key='input_form'):
     connection_type = st.selectbox("Connection Type", options=connection_type_list)
     coreg_path = st.selectbox("Coreg Path", options=coreg_path_list)
     isp = st.selectbox("ISP", options=isp_list)
-    male_female = st.radio("Male/Female", options=[0, 1], index=0)
+    male_female = st.radio("Gender", options=["Male", "Female"], index=0)
     source = st.selectbox("Source", options=source_list)
     subid = st.selectbox("Sub ID", options=subid_list)
     age = st.number_input("Age", value=62)
@@ -140,7 +140,7 @@ if submit_button:
         "connection_type": connection_type,
         "coreg_path": coreg_path,
         "isp": isp,
-        "Male/Female": male_female,
+        "Male/Female": 1 if male_female == "Male" else 0,
         "source": source,
         "subid": subid,
         "Age": age,
