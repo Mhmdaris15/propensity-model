@@ -5,6 +5,7 @@ import joblib
 import json
 # input file
 model = joblib.load('model/Supermodel API Pre-Ping.sklearn')
+imputer = joblib.load('model/SimpleImputer.sklearn')
 from datetime import datetime, timedelta
 from utils import numerize_ip, get_time_category, get_feature_engineerings, get_month_dobs, get_feature_engineering, get_month_dob
 
@@ -213,6 +214,8 @@ if st.button("Predict", key="predicts"):
             st.write(df)
             
             # Make prediction
+            df[df.columns] = imputer.transform(df)
+
             predictions = model.predict(df)
             predict_proba = model.predict_proba(df)
             
@@ -325,6 +328,7 @@ if st.button("Predict", key="predict"):
             df = pd.DataFrame([input_data])
             
             # Make prediction
+            df[df.columns] = imputer.transform(df)
             predictions = model.predict(df)
             predict_proba = model.predict_proba(df)
             

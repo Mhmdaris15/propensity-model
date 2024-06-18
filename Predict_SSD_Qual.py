@@ -87,6 +87,11 @@ def get_feature_engineering(timestamp) :
 
     return hour, day, week, dow
 
+def get_month_dob(dob) :
+    dob = pd.to_datetime([dob], format = '%Y-%m-%d').to_period('D')
+    month = int(dob.month[0])
+    return month
+
 # Function to determine Time Category based on Hour
 def get_time_category(hour):
     if 0 <= hour < 6:
@@ -97,11 +102,6 @@ def get_time_category(hour):
         return "12 - 18"
     else:
         return "18 - 24"
-
-def get_month_dob(dob) :
-    dob = pd.to_datetime([dob], format = '%Y-%m-%d').to_period('D')
-    month = int(dob.month[0])
-    return month
 
 # Title of the app
 st.title("Structured Data Prediction")
@@ -144,7 +144,7 @@ with st.form(key='input_form'):
     # Derived fields (read-only)
     state_city = f"{state} - {city}"
     source_subid = f"{source} - {subid}"
-    hour, day, week, dow = get_feature_engineering(timestamp)
+    _hour, day, week, dow = get_feature_engineering(timestamp)
     time_category = get_time_category(hour)
     ip_address_numerized = numerize_ip(ip_address)
     month_dob = get_month_dob(dob)
