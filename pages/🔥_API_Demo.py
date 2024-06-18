@@ -4,9 +4,9 @@ import streamlit as st
 import joblib
 import json
 # input file
-model = joblib.load('model/Supermodel API Pre-Ping.pkl')
+model = joblib.load('model/Supermodel API Pre-Ping.sklearn')
 from datetime import datetime, timedelta
-from utils import numerize_ip, get_time_category
+from utils import numerize_ip, get_time_category, get_feature_engineerings, get_month_dobs, get_feature_engineering, get_month_dob
 
 # Title of the app
 # st.title("Text Classification Prediction")
@@ -30,17 +30,16 @@ Predict the probability for multiple data entries.
   [
     {
         "Timestamp": "2024-05-01 00:00:00",
+        "DOB" : "1985-03-21",
         "AS Description": "ATT-INTERNET4",
-        "country": "US",
-        "state": "OR",
-        "city": "GRANTS PASS",
-        "postalcode": 97526,
-        "connection_type": "Cable/DSL",
-        "coreg_path": "15",
-        "isp": "AT&T Wireless",
+        "Country Code": "US",
+        "State": "OR",
+        "City": "GRANTS PASS",
+        "Postalcode": 97526,
+        "Coreg Path": "15",
         "Male/Female": 0,
-        "source": "whatifmedia-linkout",
-        "subid": "1006",
+        "Source": "whatifmedia-linkout",
+        "Subid": "1006",
         "Age": 61,
         "Latitude (generated)": 42.4394,
         "Longitude (generated)": -123.3272,
@@ -48,17 +47,16 @@ Predict the probability for multiple data entries.
     },
     {
         "Timestamp": "2024-05-18 00:00:00",
+        "DOB" : "1983-06-14",
         "AS Description": "CELLCO-PART",
-        "country": "US",
-        "state": "NC",
-        "city": "LEXINGTON",
-        "postalcode": 27292,
-        "connection_type": "Cellular",
-        "coreg_path": "5",
-        "isp": "Verizon Wireless",
+        "Country Code": "US",
+        "State": "NC",
+        "City": "LEXINGTON",
+        "Postalcode": 27292,
+        "Coreg Path": "5",
         "Male/Female": 0,
-        "source": "whatifmedia-linkout",
-        "subid": "1799",
+        "Source": "whatifmedia-linkout",
+        "Subid": "1799",
         "Age": 53,
         "Latitude (generated)": 35.824,
         "Longitude (generated)": -80.2534,
@@ -90,22 +88,21 @@ Predict the probability for a single data entry.
   #### Example Request:
   ```json
   {
-      "Timestamp": "2024-05-13 00:00:00",
-      "AS Description": "ATT-INTERNET4",
-      "country": "US",
-      "state": "FL",
-      "city": "FORT LAUDERDALE",
-      "postalcode": 33325,
-      "connection_type": "Cable/DSL",
-      "coreg_path": "3",
-      "isp": "AT&T Internet",
-      "Male/Female": 0,
-      "source": "whatifmedia-linkout",
-      "subid": "2027",
-      "Age": 62,
-      "Latitude (generated)": 26.1223,
-      "Longitude (generated)": -80.1434,
-      "IP Address": "99.73.70.54"
+    "Timestamp": "2024-05-13 00:00:00",
+    "DOB" : "1983-06-14",
+    "AS Description": "ATT-INTERNET4",
+    "Country Code": "US",
+    "State": "FL",
+    "City": "FORT LAUDERDALE",
+    "Postalcode": 33325,
+    "Coreg Path": "3",
+    "Male/Female": 0,
+    "Source": "whatifmedia-linkout",
+    "Subid": "2027",
+    "Age": 62,
+    "Latitude (generated)": 26.1223,
+    "Longitude (generated)": -80.1434,
+    "IP Address": "99.73.70.54"
   }
   ```
 
@@ -122,17 +119,16 @@ Predict the probability for a single data entry.
 Each input object should contain the following fields:
 
 - **Timestamp**: String (format `YYYY-MM-DD HH:MM:SS`)
+- **DOB** : String (format = `YYYY-MM-DD`)
 - **AS Description**: String
-- **country**: String
-- **state**: String
-- **city**: String
-- **postalcode**: Integer
-- **connection_type**: String
-- **coreg_path**: String
-- **isp**: String
+- **Country**: String
+- **State**: String
+- **City**: String
+- **Postalcode**: Integer
+- **Coreg Path**: String
 - **Male/Female**: Integer (0 for Male, 1 for Female)
-- **source**: String
-- **subid**: String
+- **Source**: String
+- **Subid**: String
 - **Age**: Integer
 - **Latitude (generated)**: Float
 - **Longitude (generated)**: Float
@@ -140,7 +136,7 @@ Each input object should contain the following fields:
 
 ## Notes
 
-- The `Timestamp` field is used to extract the hour and derive the `Time Category`.
+- The `Timestamp` field is used to extract the hour, day, week, and DOW, and to derive the `Time Category`.
 - The `IP Address` is numerized to create `IP Address Numerized`.
 - Additional fields like `State + City`, `Source + Sub Id`, `Hour`, and `Time Category` are derived from the provided fields.
 
@@ -155,17 +151,16 @@ st.write("## API Demonstration")
 json_input_1_sample = """[
   {
       "Timestamp": "2024-05-01 00:00:00",
+      "DOB" : "1965-03-08",
       "AS Description": "ATT-INTERNET4",
-      "country": "US",
-      "state": "OR",
-      "city": "GRANTS PASS",
-      "postalcode": 97526,
-      "connection_type": "Cable/DSL",
-      "coreg_path": "15",
-      "isp": "AT&T Wireless",
+      "Country Code": "US",
+      "State": "OR",
+      "City": "GRANTS PASS",
+      "Postalcode": 97526,
+      "Coreg Path": "15",
       "Male/Female": 0,
-      "source": "whatifmedia-linkout",
-      "subid": "1006",
+      "Source": "whatifmedia-linkout",
+      "Subid": "1006",
       "Age": 61,
       "Latitude (generated)": 42.4394,
       "Longitude (generated)": -123.3272,
@@ -173,17 +168,16 @@ json_input_1_sample = """[
   },
   {
       "Timestamp": "2024-05-18 00:00:00",
+      "DOB" : "1965-12-15",
       "AS Description": "CELLCO-PART",
-      "country": "US",
-      "state": "NC",
-      "city": "LEXINGTON",
-      "postalcode": 27292,
-      "connection_type": "Cellular",
-      "coreg_path": "5",
-      "isp": "Verizon Wireless",
+      "Country Code": "US",
+      "State": "NC",
+      "City": "LEXINGTON",
+      "Postalcode": 27292,
+      "Coreg Path": "5",
       "Male/Female": 0,
-      "source": "whatifmedia-linkout",
-      "subid": "1799",
+      "Source": "whatifmedia-linkout",
+      "Subid": "1799",
       "Age": 53,
       "Latitude (generated)": 35.824,
       "Longitude (generated)": -80.2534,
@@ -200,66 +194,23 @@ if st.button("Predict", key="predicts"):
         try:
             # Parse the JSON input
             data_list = json.loads(json_input_1)
+            df = pd.DataFrame.from_records(data_list)
 
-            # Initialize a list to store input data for all records
-            all_input_data = []
+            df['State + City'] = df['State'] + ' - ' + df['City']
+            df['Source + Sub Id'] = df['Source'] + ' - ' + df['Subid']
+            df['Timestamp'] = pd.to_datetime(df['Timestamp'])
+            df[['Hour', 'Day', 'Week', 'DOW']] = df['Timestamp'].apply(get_feature_engineerings).apply(pd.Series)
+            df['Month_Dob'] = df['DOB'].apply(get_month_dob)
+            df['Time Category'] = df['Hour'].apply(get_time_category)
+            df['IP Numerized'] = df['IP Address'].apply(numerize_ip)
 
-            # Process each record in the data list
-            for data in data_list:
-                # Parse input data
-                timestamp = data['Timestamp']
-                as_description = data['AS Description']
-                country = data['country']
-                state = data['state']
-                city = data['city']
-                postalcode = data['postalcode']
-                connection_type = data['connection_type']
-                coreg_path = data['coreg_path']
-                isp = data['isp']
-                male_female = data['Male/Female']
-                source = data['source']
-                subid = data['subid']
-                age = data['Age']
-                latitude = data['Latitude (generated)']
-                longitude = data['Longitude (generated)']
-                ip_address = data['IP Address']
-
-                # Compute derived fields
-                state_city = f"{state} - {city}"
-                source_subid = f"{source} - {subid}"
-                hour = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').hour
-                time_category = get_time_category(hour)
-                ip_address_numerized = numerize_ip(ip_address)
-
-                # Create a dictionary with the input data
-                input_data = {
-                    "AS Description": as_description,
-                    "country": country,
-                    "state": state,
-                    "city": city,
-                    "postalcode": postalcode,
-                    "connection_type": connection_type,
-                    "coreg_path": coreg_path,
-                    "isp": isp,
-                    "Male/Female": male_female,
-                    "source": source,
-                    "subid": subid,
-                    "Age": age,
-                    "Latitude (generated)": latitude,
-                    "Longitude (generated)": longitude,
-                    "State + City": state_city,
-                    "Source + Sub Id": source_subid,
-                    "Hour": hour,
-                    "Time Category": time_category,
-                    "IP Address Numerized": ip_address_numerized
-                }
-
-                # Append the input data to the list
-                all_input_data.append(input_data)
-
-            
-            # Convert the JSON data to a DataFrame
-            df = pd.DataFrame(all_input_data)
+            df = df[[
+                'AS Description', 'Country Code', 'State', 'City', 'Postalcode', 'Coreg Path',
+                'Male/Female', 'Source', 'Subid', 'Age', 'IP Numerized', 'Latitude (generated)',
+                'Longitude (generated)', 'Source + Sub Id', 'State + City', 'Hour', 'Day', 'Week',
+                'DOW', 'Time Category', 'Month_Dob'
+            ]]
+            st.write(df)
             
             # Make prediction
             predictions = model.predict(df)
@@ -286,25 +237,24 @@ if st.button("Predict", key="predicts"):
             st.json(predict_proba[:, 1].tolist())
         except json.JSONDecodeError:
             st.write("Invalid JSON input. Please enter valid JSON.")
-        except Exception as e:
-            st.write(f"An error occurred: {e}")
+        # except Exception as e:
+        #     st.write(f"An error occurred: {e}")
     else:
         st.write("Please enter some JSON input.")
 
 
 json_input_2_sample = """{
     "Timestamp": "2024-05-13 00:00:00",
+    "DOB" : "1975-03-22",
     "AS Description": "ATT-INTERNET4",
-    "country": "US",
-    "state": "FL",
-    "city": "FORT LAUDERDALE",
-    "postalcode": 33325,
-    "connection_type": "Cable/DSL",
-    "coreg_path": "3",
-    "isp": "AT&T Internet",
+    "Country Code": "US",
+    "State": "FL",
+    "City": "FORT LAUDERDALE",
+    "Postalcode": 33325,
+    "Coreg Path": "3",
     "Male/Female": 0,
-    "source": "whatifmedia-linkout",
-    "subid": "2027",
+    "Source": "whatifmedia-linkout",
+    "Subid": "2027",
     "Age": 62,
     "Latitude (generated)": 26.1223,
     "Longitude (generated)": -80.1434,
@@ -321,19 +271,18 @@ if st.button("Predict", key="predict"):
             # Parse the JSON input
             data = json.loads(json_input_2)
 
-             # Parse input data
+            # Parse input data
             timestamp = data['Timestamp']
+            dob = data['DOB']
             as_description = data['AS Description']
-            country = data['country']
-            state = data['state']
-            city = data['city']
-            postalcode = data['postalcode']
-            connection_type = data['connection_type']
-            coreg_path = data['coreg_path']
-            isp = data['isp']
+            country = data['Country Code']
+            state = data['State']
+            city = data['City']
+            postalcode = data['Postalcode']
+            coreg_path = data['Coreg Path']
             male_female = data['Male/Female']
-            source = data['source']
-            subid = data['subid']
+            source = data['Source']
+            subid = data['Subid']
             age = data['Age']
             latitude = data['Latitude (generated)']
             longitude = data['Longitude (generated)']
@@ -342,31 +291,34 @@ if st.button("Predict", key="predict"):
             # Compute derived fields
             state_city = f"{state} - {city}"
             source_subid = f"{source} - {subid}"
-            hour = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').hour
+            hour, day, week, dow = get_feature_engineering(timestamp)
+            month_dob = get_month_dob(dob)
             time_category = get_time_category(hour)
             ip_address_numerized = numerize_ip(ip_address)
 
             # Create a dictionary with the input data
             input_data = {
                 "AS Description": as_description,
-                "country": country,
-                "state": state,
-                "city": city,
-                "postalcode": postalcode,
-                "connection_type": connection_type,
-                "coreg_path": coreg_path,
-                "isp": isp,
+                "Country Code": country,
+                "State": state,
+                "City": city,
+                "Postalcode": postalcode,
+                "Coreg Path": coreg_path,
                 "Male/Female": male_female,
-                "source": source,
-                "subid": subid,
+                "Source": source,
+                "Subid": subid,
                 "Age": age,
+                "IP Numerized": ip_address_numerized,
                 "Latitude (generated)": latitude,
                 "Longitude (generated)": longitude,
-                "State + City": state_city,
                 "Source + Sub Id": source_subid,
+                "State + City": state_city,
                 "Hour": hour,
+                "Day" : day,
+                "Week" : week,
+                "DOW" : dow,
                 "Time Category": time_category,
-                "IP Address Numerized": ip_address_numerized
+                "Month_Dob" : month_dob
             }
             
             # Convert the JSON data to a DataFrame
